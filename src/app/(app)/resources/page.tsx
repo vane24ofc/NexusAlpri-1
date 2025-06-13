@@ -1,3 +1,5 @@
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { ResourceCard } from "@/components/resources/ResourceCard";
 import { MOCK_RESOURCES } from "@/lib/constants";

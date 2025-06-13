@@ -1,7 +1,10 @@
+
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { MOCK_COURSES } from "@/lib/constants";
-import { Edit3, PlusCircle, Search, MoreHorizontal, Trash2, Eye, BarChart2 } from "lucide-react";
+import { Edit3, PlusCircle, Search, MoreHorizontal, Trash2, Eye, BarChart2, Users } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

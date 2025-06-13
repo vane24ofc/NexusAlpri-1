@@ -5,7 +5,7 @@ import { BookCopy, PlayCircle, CheckCircle, Search, ListFilter } from "lucide-re
 import Link from "next/link";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

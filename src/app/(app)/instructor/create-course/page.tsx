@@ -1,3 +1,6 @@
+// src/app/(app)/instructor/create-course/page.tsx
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,8 +8,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BookCopy, UploadCloud } from "lucide-react";
+import React, { useState } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export default function InstructorCreateCoursePage() {
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+
+  const handleThumbnailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setThumbnailPreview(null);
+    }
+  };
+
   return (
     <AuthGuard allowedRoles={['instructor']}>
       <div className="container mx-auto py-8 px-4 md:px-0">
@@ -35,16 +56,40 @@ export default function InstructorCreateCoursePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="courseThumbnail">Miniatura del Curso (Opcional)</Label>
-              <div className="flex items-center justify-center w-full">
-                  <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-border border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/70">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
-                          <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Haz clic para subir</span> o arrastra y suelta</p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG, GIF (MAX. 800x400px)</p>
-                      </div>
-                      <Input id="dropzone-file" type="file" className="hidden" />
-                  </label>
-              </div> 
+              <div className="w-full">
+                <label
+                  htmlFor="dropzone-file"
+                  className={cn(
+                    "flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer relative overflow-hidden",
+                    thumbnailPreview ? "border-primary bg-card" : "bg-muted/50 hover:bg-muted/70"
+                  )}
+                >
+                  {thumbnailPreview ? (
+                    <Image
+                      src={thumbnailPreview}
+                      alt="Previsualización de la miniatura"
+                      layout="fill"
+                      objectFit="contain"
+                      className="rounded-lg"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-center p-4 h-full">
+                      <UploadCloud className="w-10 h-10 mb-3 text-muted-foreground" />
+                      <p className="mb-2 text-sm text-muted-foreground">
+                        <span className="font-semibold">Haz clic para subir</span> o arrastra y suelta
+                      </p>
+                      <p className="text-xs text-muted-foreground">PNG, JPG, GIF (MAX. 800x400px, 16:9 recomendado)</p>
+                    </div>
+                  )}
+                  <Input
+                    id="dropzone-file"
+                    type="file"
+                    className="hidden"
+                    accept="image/png, image/jpeg, image/gif"
+                    onChange={handleThumbnailChange}
+                  />
+                </label>
+              </div>
             </div>
             <Button className="w-full sm:w-auto">Guardar y Continuar a Módulos</Button>
           </CardContent>

@@ -1,6 +1,9 @@
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatCard } from "@/components/dashboard/StatCard";
 import { MOCK_COURSES, MOCK_ANNOUNCEMENTS } from "@/lib/constants";
 import { BookOpen, PlayCircle, CheckCircle, ArrowRight, Briefcase } from "lucide-react";
 import Link from "next/link";

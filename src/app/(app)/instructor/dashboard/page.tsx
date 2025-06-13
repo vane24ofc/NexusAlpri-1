@@ -1,9 +1,11 @@
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MOCK_COURSES } from "@/lib/constants"; // Assuming instructors' courses are a subset or all
-import { BookOpen, Users, Edit3, PlusCircle, BarChart2 } from "lucide-react";
+import { BookOpen, Users, Edit3, PlusCircle, BarChart2, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -20,7 +22,7 @@ export default function InstructorDashboardPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
           <StatCard title="Mis Cursos Activos" value={instructorCourses.length} icon={BookOpen} />
           <StatCard title="Estudiantes Inscritos" value={totalStudentsInCourses} icon={Users} description="En todos mis cursos" />
-          <StatCard title="Nuevos Comentarios" value="12" icon={Users} iconClassName="text-accent" description="Pendientes de revisión"/>
+          <StatCard title="Nuevos Comentarios" value="12" icon={MessageSquare} iconClassName="text-accent" description="Pendientes de revisión"/>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -67,12 +69,12 @@ export default function InstructorDashboardPage() {
             </CardHeader>
             <CardContent className="space-y-3">
                 <Button variant="outline" className="w-full justify-start" asChild>
-                    <Link href="/announcements/new">
+                    <Link href="/announcements/new"> {/* This link might need adjustment if specific to course announcements */}
                         <PlusCircle className="mr-2 h-4 w-4" /> Publicar Anuncio de Curso
                     </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                    <Link href="/instructor/student-progress">
+                    <Link href="/instructor/student-progress"> {/* This link needs to be created */}
                         <BarChart2 className="mr-2 h-4 w-4" /> Ver Progreso de Estudiantes
                     </Link>
                 </Button>

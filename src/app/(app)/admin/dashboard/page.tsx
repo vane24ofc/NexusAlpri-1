@@ -1,3 +1,5 @@
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Button } from "@/components/ui/button";

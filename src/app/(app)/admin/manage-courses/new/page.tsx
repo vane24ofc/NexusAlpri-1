@@ -21,32 +21,11 @@ import { BookCopy, UploadCloud, Loader2, PlusCircle, Trash2, LinkIcon, FileTextI
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
 import { useSetAtom } from 'jotai';
-import { addCourseAtom, updateCourseModulesAtom } from '@/store/courses';
+import { addCourseAtom, updateCourseModulesAtom, courseFormValidationSchema } from '@/store/courses';
 import type { Course, Module, Lesson } from "@/types";
 
-const lessonSchema = z.object({
-  id: z.string().default(() => `lsn-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`),
-  title: z.string().min(3, "El título de la lección debe tener al menos 3 caracteres."),
-  contentType: z.enum(['video', 'link', 'document']).default('video'),
-  contentUrl: z.string().url({ message: "Por favor, introduce una URL válida." }).optional().or(z.literal('')),
-});
-
-const moduleSchema = z.object({
-  id: z.string().default(() => `mod-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`),
-  title: z.string().min(3, "El título del módulo debe tener al menos 3 caracteres."),
-  lessons: z.array(lessonSchema).default([]),
-});
-
-const courseFormSchema = z.object({
-  courseTitle: z.string().min(5, { message: "El título debe tener al menos 5 caracteres." }),
-  courseDescription: z.string().min(10, { message: "La descripción debe tener al menos 10 caracteres." }),
-  courseCategory: z.string().min(3, { message: "La categoría debe tener al menos 3 caracteres." }),
-  instructorName: z.string().min(3, { message: "El nombre del instructor debe tener al menos 3 caracteres." }),
-  courseThumbnail: z.any().optional(),
-  modules: z.array(moduleSchema).default([]),
-});
-
-type CourseFormValues = z.infer<typeof courseFormSchema>;
+// Re-use the validation schema from the store for consistency
+type CourseFormValues = z.infer<typeof courseFormValidationSchema>;
 
 export default function AdminCreateCoursePage() {
   const { toast } = useToast();
@@ -60,7 +39,7 @@ export default function AdminCreateCoursePage() {
   const updateCourseInStore = useSetAtom(updateCourseModulesAtom);
 
   const form = useForm<CourseFormValues>({
-    resolver: zodResolver(courseFormSchema),
+    resolver: zodResolver(courseFormValidationSchema),
     defaultValues: {
       courseTitle: '',
       courseDescription: '',
@@ -93,11 +72,16 @@ export default function AdminCreateCoursePage() {
 
   async function onBasicSubmit(values: Pick<CourseFormValues, 'courseTitle' | 'courseDescription' | 'courseCategory' | 'instructorName' | 'courseThumbnail'>) {
     setIsSubmittingBasic(true);
+    if (!values.instructorName) { // Ensure instructorName is provided for admin creation
+        toast({ title: "Error", description: "El nombre del instructor es requerido.", variant: "destructive" });
+        setIsSubmittingBasic(false);
+        return;
+    }
     const newCourseData = {
       courseTitle: values.courseTitle,
       courseDescription: values.courseDescription,
       courseCategory: values.courseCategory,
-      instructorName: values.instructorName,
+      instructor: values.instructorName, // Map instructorName to instructor
       courseThumbnail: values.courseThumbnail || thumbnailPreview,
       dataAiHint: values.courseCategory.toLowerCase().replace(/\s+/g, '-').split('-').slice(0,2).join(' '),
     };
@@ -341,5 +325,3 @@ export default function AdminCreateCoursePage() {
     </AuthGuard>
   );
 }
-
-    

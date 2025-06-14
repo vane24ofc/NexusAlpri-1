@@ -22,32 +22,14 @@ import { BookCopy, UploadCloud, Loader2, PlusCircle, Trash2, LinkIcon, FileTextI
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
 import { useSetAtom } from 'jotai';
-import { addCourseAtom, updateCourseModulesAtom } from '@/store/courses';
+import { addCourseAtom, updateCourseModulesAtom, courseFormValidationSchema } from '@/store/courses'; // Import the shared schema
 import { useAuth } from "@/hooks/use-auth";
 import type { Course, Module, Lesson } from "@/types";
 
-const lessonSchema = z.object({
-  id: z.string().default(() => `lsn-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`),
-  title: z.string().min(3, "El título de la lección debe tener al menos 3 caracteres."),
-  contentType: z.enum(['video', 'link', 'document']).default('video'),
-  contentUrl: z.string().url({ message: "Por favor, introduce una URL válida." }).optional().or(z.literal('')),
-});
+// Adapt the shared schema for instructor (instructorName is not in form)
+const instructorCourseFormSchema = courseFormValidationSchema.omit({ instructorName: true });
+type CourseFormValues = z.infer<typeof instructorCourseFormSchema>;
 
-const moduleSchema = z.object({
-  id: z.string().default(() => `mod-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`),
-  title: z.string().min(3, "El título del módulo debe tener al menos 3 caracteres."),
-  lessons: z.array(lessonSchema).default([]),
-});
-
-const courseFormSchema = z.object({
-  courseTitle: z.string().min(5, { message: "El título debe tener al menos 5 caracteres." }),
-  courseDescription: z.string().min(10, { message: "La descripción debe tener al menos 10 caracteres." }),
-  courseCategory: z.string().min(3, { message: "La categoría debe tener al menos 3 caracteres." }),
-  courseThumbnail: z.any().optional(),
-  modules: z.array(moduleSchema).default([]),
-});
-
-type CourseFormValues = z.infer<typeof courseFormSchema>;
 
 export default function InstructorCreateCoursePage() {
   const { toast } = useToast();
@@ -62,7 +44,7 @@ export default function InstructorCreateCoursePage() {
   const { user } = useAuth();
 
   const form = useForm<CourseFormValues>({
-    resolver: zodResolver(courseFormSchema),
+    resolver: zodResolver(instructorCourseFormSchema),
     defaultValues: {
       courseTitle: '',
       courseDescription: '',
@@ -104,7 +86,7 @@ export default function InstructorCreateCoursePage() {
       courseTitle: values.courseTitle,
       courseDescription: values.courseDescription,
       courseCategory: values.courseCategory,
-      instructorName: user.name,
+      instructor: user.name, // Use authenticated user's name
       courseThumbnail: values.courseThumbnail || thumbnailPreview,
       dataAiHint: values.courseCategory.toLowerCase().replace(/\s+/g, '-').split('-').slice(0,2).join(' '),
     };
@@ -360,5 +342,3 @@ export default function InstructorCreateCoursePage() {
     </AuthGuard>
   );
 }
-
-    

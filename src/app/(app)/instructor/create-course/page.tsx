@@ -18,11 +18,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BookCopy, UploadCloud, Loader2, PlusCircle, Trash2, Edit2, VideoIcon, LinkIcon, FileTextIcon } from "lucide-react";
+import { BookCopy, UploadCloud, Loader2, PlusCircle, Trash2, LinkIcon, FileTextIcon } from "lucide-react";
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
-import { useSetAtom, useAtom } from 'jotai';
-import { addCourseAtom, updateCourseModulesAtom, coursesAtom } from '@/store/courses';
+import { useSetAtom } from 'jotai';
+import { addCourseAtom, updateCourseModulesAtom } from '@/store/courses';
 import { useAuth } from "@/hooks/use-auth";
 import type { Course, Module, Lesson } from "@/types";
 
@@ -72,7 +72,7 @@ export default function InstructorCreateCoursePage() {
     },
   });
 
-  const { fields: moduleFields, append: appendModule, remove: removeModule, update: updateModuleField } = useFieldArray({
+  const { fields: moduleFields, append: appendModule, remove: removeModule } = useFieldArray({
     control: form.control,
     name: "modules",
   });
@@ -112,7 +112,7 @@ export default function InstructorCreateCoursePage() {
     try {
       const createdCourse = await createNewCourseInStore(newCourseData);
       setCurrentCourse(createdCourse);
-      form.setValue('modules', createdCourse.modules || []); // Sync modules with newly created course
+      form.setValue('modules', createdCourse.modules || []); 
       toast({
         title: "Información Básica Guardada",
         description: `El curso "${createdCourse.title}" ha sido creado. Ahora puedes añadir módulos y lecciones.`,
@@ -167,16 +167,15 @@ export default function InstructorCreateCoursePage() {
     if (!url) return undefined;
     try {
       const videoUrl = new URL(url);
-      let videoId = videoUrl.searchParams.get('v'); // For standard YouTube URLs like /watch?v=VIDEO_ID
-      if (!videoId && videoUrl.hostname === 'youtu.be') { // For short URLs like youtu.be/VIDEO_ID
+      let videoId = videoUrl.searchParams.get('v'); 
+      if (!videoId && videoUrl.hostname === 'youtu.be') { 
         videoId = videoUrl.pathname.substring(1);
       }
       return videoId ? `https://www.youtube.com/embed/${videoId}` : undefined;
     } catch (e) {
-      return undefined; // Not a valid URL or not a YouTube URL
+      return undefined; 
     }
   };
-
 
   return (
     <AuthGuard allowedRoles={['instructor']}>
@@ -273,9 +272,9 @@ export default function InstructorCreateCoursePage() {
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl><SelectTrigger><SelectValue placeholder="Selecciona tipo" /></SelectTrigger></FormControl>
                                         <SelectContent>
-                                        <SelectItem value="video">Video (YouTube)</SelectItem>
-                                        <SelectItem value="link" disabled>Enlace Externo (Próximamente)</SelectItem>
-                                        <SelectItem value="document" disabled>Documento (Próximamente)</SelectItem>
+                                          <SelectItem value="video">Video (YouTube)</SelectItem>
+                                          <SelectItem value="link">Enlace Externo</SelectItem>
+                                          <SelectItem value="document">Documento (URL)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     </FormItem>
@@ -308,6 +307,32 @@ export default function InstructorCreateCoursePage() {
                                   )}
                                 </>
                               )}
+                              {form.getValues(`modules.${moduleIndex}.lessons.${lessonIndex}.contentType`) === 'link' && (
+                                <FormField
+                                  control={form.control}
+                                  name={`modules.${moduleIndex}.lessons.${lessonIndex}.contentUrl`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-xs">Enlace Externo (URL)</FormLabel>
+                                      <FormControl><Input {...field} placeholder="https://ejemplo.com/recurso" /></FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
+                              {form.getValues(`modules.${moduleIndex}.lessons.${lessonIndex}.contentType`) === 'document' && (
+                                <FormField
+                                  control={form.control}
+                                  name={`modules.${moduleIndex}.lessons.${lessonIndex}.contentUrl`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-xs">URL del Documento</FormLabel>
+                                      <FormControl><Input {...field} placeholder="https://ejemplo.com/documento.pdf" /></FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
                             </Card>
                           ))}
                           <Button type="button" variant="outline" size="sm" onClick={() => addLessonToModule(moduleIndex)} className="mt-2">
@@ -335,3 +360,5 @@ export default function InstructorCreateCoursePage() {
     </AuthGuard>
   );
 }
+
+    

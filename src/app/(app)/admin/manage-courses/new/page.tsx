@@ -17,11 +17,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { BookCopy, UploadCloud, Loader2, PlusCircle, Trash2, Edit2, VideoIcon } from "lucide-react";
+import { BookCopy, UploadCloud, Loader2, PlusCircle, Trash2, LinkIcon, FileTextIcon } from "lucide-react";
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
-import { useSetAtom, useAtom } from 'jotai';
-import { addCourseAtom, updateCourseModulesAtom, coursesAtom } from '@/store/courses';
+import { useSetAtom } from 'jotai';
+import { addCourseAtom, updateCourseModulesAtom } from '@/store/courses';
 import type { Course, Module, Lesson } from "@/types";
 
 const lessonSchema = z.object({
@@ -253,9 +253,9 @@ export default function AdminCreateCoursePage() {
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl><SelectTrigger><SelectValue placeholder="Selecciona tipo" /></SelectTrigger></FormControl>
                                         <SelectContent>
-                                        <SelectItem value="video">Video (YouTube)</SelectItem>
-                                        <SelectItem value="link" disabled>Enlace Externo (Próximamente)</SelectItem>
-                                        <SelectItem value="document" disabled>Documento (Próximamente)</SelectItem>
+                                          <SelectItem value="video">Video (YouTube)</SelectItem>
+                                          <SelectItem value="link">Enlace Externo</SelectItem>
+                                          <SelectItem value="document">Documento (URL)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     </FormItem>
@@ -288,6 +288,32 @@ export default function AdminCreateCoursePage() {
                                   )}
                                 </>
                               )}
+                               {form.getValues(`modules.${moduleIndex}.lessons.${lessonIndex}.contentType`) === 'link' && (
+                                <FormField
+                                  control={form.control}
+                                  name={`modules.${moduleIndex}.lessons.${lessonIndex}.contentUrl`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-xs">Enlace Externo (URL)</FormLabel>
+                                      <FormControl><Input {...field} placeholder="https://ejemplo.com/recurso" /></FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
+                              {form.getValues(`modules.${moduleIndex}.lessons.${lessonIndex}.contentType`) === 'document' && (
+                                <FormField
+                                  control={form.control}
+                                  name={`modules.${moduleIndex}.lessons.${lessonIndex}.contentUrl`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-xs">URL del Documento</FormLabel>
+                                      <FormControl><Input {...field} placeholder="https://ejemplo.com/documento.pdf" /></FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              )}
                             </Card>
                           ))}
                           <Button type="button" variant="outline" size="sm" onClick={() => addLessonToModule(moduleIndex)} className="mt-2">
@@ -315,3 +341,5 @@ export default function AdminCreateCoursePage() {
     </AuthGuard>
   );
 }
+
+    

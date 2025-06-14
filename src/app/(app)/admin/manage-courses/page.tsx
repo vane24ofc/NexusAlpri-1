@@ -3,7 +3,7 @@
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
-import { BookOpen, PlusCircle, Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
+import { BookOpen, PlusCircle, Search, MoreHorizontal, Edit, Trash2, Eye, Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useAtom } from "jotai";
-import { coursesAtom } from "@/store/courses";
+import { useAtom, useSetAtom } from "jotai";
+import { coursesAtom, coursesLoadingAtom, coursesErrorAtom, loadCoursesAtom } from "@/store/courses";
+import { useEffect } from "react";
 
 export default function AdminManageCoursesPage() {
   const [courses] = useAtom(coursesAtom);
+  const [isLoading] = useAtom(coursesLoadingAtom);
+  const [error] = useAtom(coursesErrorAtom);
+  const dispatchLoadCourses = useSetAtom(loadCoursesAtom);
+
+  // Optionally, trigger a re-fetch if needed, e.g., on component mount if not handled by layout
+  // useEffect(() => {
+  //  dispatchLoadCourses();
+  // }, [dispatchLoadCourses]);
 
   return (
     <AuthGuard allowedRoles={['admin']}>
@@ -41,10 +50,24 @@ export default function AdminManageCoursesPage() {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle>Listado de Cursos</CardTitle>
-            <CardDescription>Edita, publica o elimina cursos de la plataforma. ({courses.length} cursos)</CardDescription>
+            <CardDescription>Edita, publica o elimina cursos de la plataforma. ({isLoading ? 'Cargando...' : courses.length} cursos)</CardDescription>
           </CardHeader>
           <CardContent>
-            {courses.length > 0 ? (
+            {isLoading && (
+              <div className="flex justify-center items-center py-10">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="ml-4 text-muted-foreground">Cargando cursos...</p>
+              </div>
+            )}
+            {error && !isLoading && (
+              <div className="flex flex-col items-center justify-center py-10 text-destructive">
+                <AlertTriangle className="h-12 w-12 mb-4" />
+                <p className="text-lg font-semibold">Error al cargar cursos</p>
+                <p className="text-sm">{error}</p>
+                <Button variant="outline" onClick={() => dispatchLoadCourses()} className="mt-4">Reintentar</Button>
+              </div>
+            )}
+            {!isLoading && !error && courses.length > 0 && (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -60,7 +83,7 @@ export default function AdminManageCoursesPage() {
                     <TableRow key={course.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Image src={course.thumbnailUrl || "https://placehold.co/60x34.png"} alt={course.title} width={60} height={34} className="rounded-sm object-cover" data-ai-hint={course.dataAiHint || "course image"} />
+                          <Image src={course.thumbnailUrl || "https://placehold.co/60x34.png"} alt={course.title} width={60} height={34} className="rounded-sm object-cover" data-ai-hint={course.dataAiHint || "course image"}/>
                           <span className="font-medium">{course.title}</span>
                         </div>
                       </TableCell>
@@ -93,7 +116,8 @@ export default function AdminManageCoursesPage() {
                   ))}
                 </TableBody>
               </Table>
-            ) : (
+            )}
+            {!isLoading && !error && courses.length === 0 && (
               <div className="text-center py-10">
                 <BookOpen className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-lg text-muted-foreground">No hay cursos creados todavía.</p>

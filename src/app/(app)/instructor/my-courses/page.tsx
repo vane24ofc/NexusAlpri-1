@@ -3,7 +3,7 @@
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
-import { Edit3, PlusCircle, Search, MoreHorizontal, Trash2, Eye, BarChart2, Users } from "lucide-react";
+import { Edit3, PlusCircle, Search, MoreHorizontal, Trash2, Eye, BarChart2, Users, Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useAtom } from "jotai";
-import { coursesAtom } from "@/store/courses";
+import { useAtom, useSetAtom } from "jotai";
+import { coursesAtom, coursesLoadingAtom, coursesErrorAtom, loadCoursesAtom } from "@/store/courses";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
 import type { Course } from "@/types";
@@ -20,12 +20,14 @@ import type { Course } from "@/types";
 
 export default function InstructorMyCoursesPage() {
   const [allCourses] = useAtom(coursesAtom);
+  const [isLoadingCourses] = useAtom(coursesLoadingAtom);
+  const [coursesError] = useAtom(coursesErrorAtom);
+  const dispatchLoadCourses = useSetAtom(loadCoursesAtom);
   const { user } = useAuth();
   const [instructorCourses, setInstructorCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     if (user && allCourses) {
-      // Filter courses by instructor name for this demo
       const filtered = allCourses.filter(course => course.instructor === user.name);
       setInstructorCourses(filtered);
     } else {
@@ -58,10 +60,24 @@ export default function InstructorMyCoursesPage() {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle>Listado de Mis Cursos</CardTitle>
-            <CardDescription>Gestiona el contenido, estudiantes y configuración de tus cursos. ({instructorCourses.length} cursos)</CardDescription>
+            <CardDescription>Gestiona el contenido, estudiantes y configuración de tus cursos. ({isLoadingCourses ? "..." : instructorCourses.length} cursos)</CardDescription>
           </CardHeader>
           <CardContent>
-            {instructorCourses.length > 0 ? (
+            {isLoadingCourses && (
+              <div className="flex justify-center items-center py-10">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <p className="ml-4 text-muted-foreground">Cargando tus cursos...</p>
+              </div>
+            )}
+            {coursesError && !isLoadingCourses && (
+              <div className="flex flex-col items-center justify-center py-10 text-destructive">
+                <AlertTriangle className="h-12 w-12 mb-4" />
+                <p className="text-lg font-semibold">Error al cargar cursos</p>
+                <p className="text-sm">{coursesError}</p>
+                <Button variant="outline" onClick={() => dispatchLoadCourses()} className="mt-4">Reintentar</Button>
+              </div>
+            )}
+            {!isLoadingCourses && !coursesError && instructorCourses.length > 0 && (
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -77,7 +93,7 @@ export default function InstructorMyCoursesPage() {
                     <TableRow key={course.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Image src={course.thumbnailUrl || "https://placehold.co/60x34.png"} alt={course.title} width={60} height={34} className="rounded-sm object-cover" data-ai-hint={course.dataAiHint || "course image"} />
+                          <Image src={course.thumbnailUrl || "https://placehold.co/60x34.png"} alt={course.title} width={60} height={34} className="rounded-sm object-cover" data-ai-hint={course.dataAiHint || "course image"}/>
                           <span className="font-medium">{course.title}</span>
                         </div>
                       </TableCell>
@@ -111,7 +127,8 @@ export default function InstructorMyCoursesPage() {
                   ))}
                 </TableBody>
               </Table>
-            ) : (
+            )}
+            {!isLoadingCourses && !coursesError && instructorCourses.length === 0 && (
               <div className="text-center py-10">
                 <Edit3 className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-lg text-muted-foreground">Aún no has creado ningún curso.</p>

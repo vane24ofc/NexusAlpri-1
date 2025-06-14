@@ -6,25 +6,41 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { MOCK_ANNOUNCEMENTS } from "@/lib/constants";
-import { BookOpen, PlayCircle, CheckCircle, ArrowRight, Briefcase } from "lucide-react";
+import { BookOpen, PlayCircle, CheckCircle, ArrowRight, Briefcase, Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import { AnnouncementCard } from "@/components/announcements/AnnouncementCard";
-import { useAtom } from "jotai";
-import { coursesAtom } from "@/store/courses";
+import { useAtom, useSetAtom } from "jotai";
+import { coursesAtom, coursesLoadingAtom, coursesErrorAtom, loadCoursesAtom } from "@/store/courses";
+import { useEffect, useState } from "react";
+import type { Course } from "@/types";
 
 export default function StudentDashboardPage() {
   const [allCourses] = useAtom(coursesAtom);
+  const [isLoadingCourses] = useAtom(coursesLoadingAtom);
+  const [coursesError] = useAtom(coursesErrorAtom);
+  const dispatchLoadCourses = useSetAtom(loadCoursesAtom);
   
-  // Mock data for student's enrollment & progress
-  // In a real app, this would come from a backend or more complex state
-  const enrolledCourses = allCourses.slice(0, 2).map((course, index) => ({
-    ...course,
-    progress: index === 0 ? 75 : 30, // Mock progress
-    nextLesson: index === 0 ? "Lección 5: Bucles For" : "Lección 2: Variables y Tipos",
-  }));
-  const completedCoursesCount = allCourses.length > 2 ? 1 : 0; // Mock one completed if enough courses exist
+  const [enrolledCourses, setEnrolledCourses] = useState<(Course & {progress: number; nextLesson: string})[]>([]);
+  const [completedCoursesCount, setCompletedCoursesCount] = useState(0);
+
+  useEffect(() => {
+    if (!isLoadingCourses && !coursesError && allCourses.length > 0) {
+      // Mock data for student's enrollment & progress
+      const currentEnrolled = allCourses.slice(0, Math.min(2, allCourses.length)).map((course, index) => ({
+        ...course,
+        progress: index === 0 ? 75 : 30, 
+        nextLesson: index === 0 ? (course.modules?.[0]?.lessons?.[1]?.title || "Lección 2") : (course.modules?.[0]?.lessons?.[0]?.title || "Lección 1"),
+      }));
+      setEnrolledCourses(currentEnrolled);
+      setCompletedCoursesCount(allCourses.length > 2 ? 1 : 0);
+    } else {
+      setEnrolledCourses([]);
+      setCompletedCoursesCount(0);
+    }
+  }, [allCourses, isLoadingCourses, coursesError]);
+
 
   return (
     <AuthGuard allowedRoles={['student']}>
@@ -35,10 +51,13 @@ export default function StudentDashboardPage() {
           <Card className="bg-primary text-primary-foreground shadow-lg">
             <CardHeader>
               <CardTitle className="text-xl font-headline">Continuar Aprendiendo</CardTitle>
-              {enrolledCourses.length > 0 && <CardDescription className="text-primary-foreground/80">{enrolledCourses[0].title}</CardDescription>}
+              {isLoadingCourses && <CardDescription className="text-primary-foreground/80">Cargando...</CardDescription>}
+              {!isLoadingCourses && enrolledCourses.length > 0 && <CardDescription className="text-primary-foreground/80">{enrolledCourses[0].title}</CardDescription>}
             </CardHeader>
             <CardContent>
-              {enrolledCourses.length > 0 ? (
+              {isLoadingCourses && <div className="flex items-center justify-center p-2"><Loader2 className="h-5 w-5 animate-spin mr-2"/>Cargando...</div>}
+              {coursesError && !isLoadingCourses && <p className="text-primary-foreground/90 text-center">Error al cargar curso.</p>}
+              {!isLoadingCourses && !coursesError && enrolledCourses.length > 0 && (
                 <>
                   <p className="text-sm mb-2">Siguiente: {enrolledCourses[0].nextLesson}</p>
                   <Progress value={enrolledCourses[0].progress} className="mb-4 h-3 [&>*]:bg-accent" />
@@ -48,13 +67,14 @@ export default function StudentDashboardPage() {
                     </Link>
                   </Button>
                 </>
-              ) : (
+              )}
+              {!isLoadingCourses && !coursesError && enrolledCourses.length === 0 && (
                  <p className="text-primary-foreground/80">No tienes cursos en progreso. ¡Explora el catálogo!</p>
               )}
             </CardContent>
           </Card>
-          <StatCard title="Cursos Inscritos" value={enrolledCourses.length} icon={BookOpen} />
-          <StatCard title="Cursos Completados" value={completedCoursesCount} icon={CheckCircle} iconClassName="text-green-500" />
+          <StatCard title="Cursos Inscritos" value={isLoadingCourses ? "..." : enrolledCourses.length} icon={BookOpen} />
+          <StatCard title="Cursos Completados" value={isLoadingCourses ? "..." : completedCoursesCount} icon={CheckCircle} iconClassName="text-green-500" />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -66,7 +86,20 @@ export default function StudentDashboardPage() {
                     </Button>
                 </CardHeader>
                 <CardContent>
-                {enrolledCourses.length > 0 ? (
+                {isLoadingCourses && (
+                  <div className="flex justify-center items-center py-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="ml-3 text-muted-foreground">Cargando mis cursos...</p>
+                  </div>
+                )}
+                {coursesError && !isLoadingCourses && (
+                  <div className="text-center py-10 text-destructive">
+                    <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
+                    <p className="font-semibold">Error al cargar cursos.</p>
+                    <Button variant="link" onClick={() => dispatchLoadCourses()}>Reintentar</Button>
+                  </div>
+                )}
+                {!isLoadingCourses && !coursesError && enrolledCourses.length > 0 && (
                     <div className="space-y-4">
                     {enrolledCourses.map(course => (
                         <Link href={`/courses/${course.id}`} key={course.id} className="block p-4 border rounded-lg hover:shadow-md transition-shadow duration-200 hover:border-primary">
@@ -76,7 +109,7 @@ export default function StudentDashboardPage() {
                                     alt={course.title} 
                                     width={120} 
                                     height={70} 
-                                    className="rounded-md object-cover" 
+                                    className="rounded-md object-cover"
                                     data-ai-hint={course.dataAiHint || "course image"} 
                                 />
                                 <div className="flex-1">
@@ -92,7 +125,8 @@ export default function StudentDashboardPage() {
                         </Link>
                     ))}
                     </div>
-                ) : (
+                )}
+                {!isLoadingCourses && !coursesError && enrolledCourses.length === 0 && (
                     <div className="text-center py-8">
                         <BookOpen className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                         <p className="text-muted-foreground mb-4">Aún no te has inscrito a ningún curso.</p>

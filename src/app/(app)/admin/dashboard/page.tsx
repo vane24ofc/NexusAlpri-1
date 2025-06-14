@@ -6,14 +6,18 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MOCK_ANNOUNCEMENTS } from "@/lib/constants";
-import { Users, BookOpen, Settings, PlusCircle, Megaphone, BarChart3 } from "lucide-react";
+import { Users, BookOpen, Settings, PlusCircle, Megaphone, BarChart3, Loader2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { AnnouncementCard } from "@/components/announcements/AnnouncementCard";
-import { useAtom } from "jotai";
-import { courseCountAtom } from "@/store/courses";
+import { useAtom, useSetAtom } from "jotai";
+import { courseCountAtom, coursesLoadingAtom, coursesErrorAtom, loadCoursesAtom } from "@/store/courses";
 
 export default function AdminDashboardPage() {
   const [courseCount] = useAtom(courseCountAtom);
+  const [isLoadingCourses] = useAtom(coursesLoadingAtom);
+  // const [coursesError] = useAtom(coursesErrorAtom); // Potentially use for showing an error on the stat card
+  // const dispatchLoadCourses = useSetAtom(loadCoursesAtom);
+
 
   return (
     <AuthGuard allowedRoles={['admin']}>
@@ -22,7 +26,13 @@ export default function AdminDashboardPage() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <StatCard title="Total Usuarios" value="125" icon={Users} description="+5 esta semana" />
-          <StatCard title="Total Cursos" value={courseCount} icon={BookOpen} description="+Nuevos cursos dinámicos" />
+          <StatCard 
+            title="Total Cursos" 
+            value={isLoadingCourses ? "..." : courseCount} 
+            icon={isLoadingCourses ? Loader2 : BookOpen} 
+            iconClassName={isLoadingCourses ? "animate-spin" : ""}
+            description="+Nuevos cursos dinámicos" 
+          />
           <StatCard title="Instructores Activos" value="12" icon={Users} iconClassName="text-accent" />
           <StatCard title="Anuncios Publicados" value={MOCK_ANNOUNCEMENTS.length} icon={Megaphone} iconClassName="text-green-500" />
         </div>

@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
                   <PlusCircle className="mr-2 h-5 w-5 text-primary" /> 
                   <div>
                     <p className="font-semibold">Crear Usuario</p>
-                    <p className="text-xs text-muted-foreground">Añadir nuevo admin, instructor o estudiante.</p>
+                    <p className="text-sm text-muted-foreground">Añadir nuevo admin, instructor o estudiante.</p>
                   </div>
                 </Link>
               </Button>
@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
                     <PlusCircle className="mr-2 h-5 w-5 text-primary" />
                     <div>
                         <p className="font-semibold">Crear Curso</p>
-                        <p className="text-xs text-muted-foreground">Diseñar y publicar nuevo contenido.</p>
+                        <p className="text-sm text-muted-foreground">Diseñar y publicar nuevo contenido.</p>
                     </div>
                  </Link>
               </Button>
@@ -60,7 +60,7 @@ export default function AdminDashboardPage() {
                     <Megaphone className="mr-2 h-5 w-5 text-primary" />
                     <div>
                         <p className="font-semibold">Nuevo Anuncio</p>
-                        <p className="text-xs text-muted-foreground">Comunicar novedades importantes.</p>
+                        <p className="text-sm text-muted-foreground">Comunicar novedades importantes.</p>
                     </div>
                  </Link>
               </Button>
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
                     <Settings className="mr-2 h-5 w-5 text-primary" />
                      <div>
                         <p className="font-semibold">Configuración</p>
-                        <p className="text-xs text-muted-foreground">Ajustar parámetros del sistema.</p>
+                        <p className="text-sm text-muted-foreground">Ajustar parámetros del sistema.</p>
                     </div>
                  </Link>
               </Button>
@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
                     <Users className="mr-2 h-5 w-5 text-primary" />
                      <div>
                         <p className="font-semibold">Gestionar Usuarios</p>
-                        <p className="text-xs text-muted-foreground">Ver y editar perfiles.</p>
+                        <p className="text-sm text-muted-foreground">Ver y editar perfiles.</p>
                     </div>
                  </Link>
               </Button>
@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
                     <BookOpen className="mr-2 h-5 w-5 text-primary" />
                      <div>
                         <p className="font-semibold">Gestionar Cursos</p>
-                        <p className="text-xs text-muted-foreground">Editar y organizar el catálogo.</p>
+                        <p className="text-sm text-muted-foreground">Editar y organizar el catálogo.</p>
                     </div>
                  </Link>
               </Button>

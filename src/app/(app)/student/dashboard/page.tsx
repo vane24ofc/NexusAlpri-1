@@ -1,24 +1,30 @@
+
 'use client';
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { MOCK_COURSES, MOCK_ANNOUNCEMENTS } from "@/lib/constants";
+import { MOCK_ANNOUNCEMENTS } from "@/lib/constants";
 import { BookOpen, PlayCircle, CheckCircle, ArrowRight, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import { AnnouncementCard } from "@/components/announcements/AnnouncementCard";
+import { useAtom } from "jotai";
+import { coursesAtom } from "@/store/courses";
 
 export default function StudentDashboardPage() {
-  // Mock data for student
-  const enrolledCourses = MOCK_COURSES.slice(0, 2).map((course, index) => ({
+  const [allCourses] = useAtom(coursesAtom);
+  
+  // Mock data for student's enrollment & progress
+  // In a real app, this would come from a backend or more complex state
+  const enrolledCourses = allCourses.slice(0, 2).map((course, index) => ({
     ...course,
     progress: index === 0 ? 75 : 30, // Mock progress
     nextLesson: index === 0 ? "Lección 5: Bucles For" : "Lección 2: Variables y Tipos",
   }));
-  const completedCoursesCount = 1;
+  const completedCoursesCount = allCourses.length > 2 ? 1 : 0; // Mock one completed if enough courses exist
 
   return (
     <AuthGuard allowedRoles={['student']}>

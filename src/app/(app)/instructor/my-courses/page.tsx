@@ -3,7 +3,6 @@
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
-import { MOCK_COURSES } from "@/lib/constants";
 import { Edit3, PlusCircle, Search, MoreHorizontal, Trash2, Eye, BarChart2, Users } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +11,37 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAtom } from "jotai";
+import { coursesAtom } from "@/store/courses";
+import { useAuth } from "@/hooks/use-auth";
+import { useEffect, useState } from "react";
+import type { Course } from "@/types";
+
 
 export default function InstructorMyCoursesPage() {
-  // For demo, assume all MOCK_COURSES belong to this instructor
-  const instructorCourses = MOCK_COURSES; 
+  const [allCourses] = useAtom(coursesAtom);
+  const { user } = useAuth();
+  const [instructorCourses, setInstructorCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    if (user && allCourses) {
+      // For now, assuming instructor dashboard shows all courses.
+      // Later, filter: allCourses.filter(course => course.instructorId === user.id)
+      // or course.instructor === user.name
+      // Using instructor name for now as per Course type
+      setInstructorCourses(allCourses.filter(course => course.instructor === user.name));
+    } else {
+       // If no user, or user has no name, or courses not loaded, show all or none.
+       // For this demo, if user is instructor, show all if their name isn't matched.
+       // In a real app, you'd likely have instructor IDs.
+       if(user?.role === 'instructor'){
+         setInstructorCourses(allCourses); // Fallback for demo to show something
+       } else {
+         setInstructorCourses([]);
+       }
+    }
+  }, [allCourses, user]);
+
 
   return (
     <AuthGuard allowedRoles={['instructor']}>
@@ -41,7 +67,7 @@ export default function InstructorMyCoursesPage() {
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle>Listado de Mis Cursos</CardTitle>
-            <CardDescription>Gestiona el contenido, estudiantes y configuración de tus cursos.</CardDescription>
+            <CardDescription>Gestiona el contenido, estudiantes y configuración de tus cursos. ({instructorCourses.length} cursos)</CardDescription>
           </CardHeader>
           <CardContent>
             {instructorCourses.length > 0 ? (

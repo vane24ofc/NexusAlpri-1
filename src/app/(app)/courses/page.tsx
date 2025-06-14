@@ -1,12 +1,17 @@
+
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { MOCK_COURSES } from "@/lib/constants";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, ListFilter } from "lucide-react";
+import { Search, ListFilter, BookOpen as BookOpenIcon } from "lucide-react"; // Renamed to avoid conflict
+import { useAtom } from "jotai";
+import { coursesAtom } from "@/store/courses";
 
 export default function CoursesPage() {
-  const categories = Array.from(new Set(MOCK_COURSES.map(c => c.category)));
+  const [courses] = useAtom(coursesAtom);
+  const categories = Array.from(new Set(courses.map(c => c.category)));
   // In a real app, filtering would be dynamic.
 
   return (
@@ -36,15 +41,15 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        {MOCK_COURSES.length > 0 ? (
+        {courses.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {MOCK_COURSES.map(course => (
+            {courses.map(course => (
               <CourseCard key={course.id} course={course} />
             ))}
           </div>
         ) : (
           <div className="text-center py-12">
-            <BookOpen className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+            <BookOpenIcon className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
             <p className="text-xl text-muted-foreground">No hay cursos disponibles en este momento.</p>
             <p className="text-sm text-muted-foreground">Por favor, vuelve más tarde o contacta al administrador.</p>
           </div>

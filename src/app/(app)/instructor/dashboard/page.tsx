@@ -1,18 +1,40 @@
+
 'use client';
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { MOCK_COURSES } from "@/lib/constants"; // Assuming instructors' courses are a subset or all
 import { BookOpen, Users, Edit3, PlusCircle, BarChart2, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAtom } from "jotai";
+import { coursesAtom } from "@/store/courses";
+import { useAuth } from "@/hooks/use-auth";
+import type { Course } from "@/types";
+import { useEffect, useState } from "react";
 
 export default function InstructorDashboardPage() {
-  // Mock data for instructor
-  const instructorCourses = MOCK_COURSES.filter((course, index) => index < 2); // First 2 courses for this demo instructor
-  const totalStudentsInCourses = 78; 
+  const [allCourses] = useAtom(coursesAtom);
+  const { user } = useAuth();
+  const [instructorCourses, setInstructorCourses] = useState<Course[]>([]);
+  
+  useEffect(() => {
+    if (user && allCourses) {
+      // Filter courses by instructor name. In a real app, use instructorId.
+      const filtered = allCourses.filter(course => course.instructor === user.name);
+      setInstructorCourses(filtered);
+    } else if (user?.role === 'instructor' && allCourses) {
+      // Fallback: if user is instructor but name doesn't match, show all courses for demo
+      // This logic should be refined in a production app (e.g. ensure instructor name is always set on course creation)
+      setInstructorCourses(allCourses);
+    } else {
+        setInstructorCourses([]);
+    }
+  }, [allCourses, user]);
+
+  const displayCourses = instructorCourses.slice(0, 2); // Show first 2 for dashboard quick view
+  const totalStudentsInCourses = 78; // Mock data
 
   return (
     <AuthGuard allowedRoles={['instructor']}>
@@ -36,9 +58,9 @@ export default function InstructorDashboardPage() {
               </Button>
             </CardHeader>
             <CardContent>
-              {instructorCourses.length > 0 ? (
+              {displayCourses.length > 0 ? (
                 <div className="space-y-4">
-                  {instructorCourses.map(course => (
+                  {displayCourses.map(course => (
                     <div key={course.id} className="flex items-center space-x-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                       <Image src={course.thumbnailUrl || "https://placehold.co/100x60.png"} alt={course.title} width={100} height={60} className="rounded-md object-cover" data-ai-hint={course.dataAiHint || "course image"} />
                       <div className="flex-1">

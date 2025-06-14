@@ -1,21 +1,30 @@
+
+'use client';
+
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { Button } from "@/components/ui/button";
-import { MOCK_COURSES } from "@/lib/constants";
-import { BookCopy, PlayCircle, CheckCircle, Search, ListFilter } from "lucide-react";
+import { BookCopy, PlayCircle, CheckCircle, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAtom } from "jotai";
+import { coursesAtom } from "@/store/courses";
 
 export default function StudentMyLearningPage() {
-  // Mock data for student's learning
-  const inProgressCourses = MOCK_COURSES.slice(0, 2).map((course, index) => ({
+  const [allCourses] = useAtom(coursesAtom);
+
+  // Mock data for student's learning progress - this would be more complex in a real app
+  const inProgressCourses = allCourses.slice(0, Math.min(2, allCourses.length)).map((course, index) => ({
     ...course,
     progress: index === 0 ? 75 : 30,
   }));
-  const completedCourses = MOCK_COURSES.slice(2, 3).map(course => ({ ...course, progress: 100 }));
+  
+  const completedCourses = allCourses.length > 2 ? 
+    allCourses.slice(2, Math.min(3, allCourses.length)).map(course => ({ ...course, progress: 100 }))
+    : [];
 
   return (
     <AuthGuard allowedRoles={['student']}>

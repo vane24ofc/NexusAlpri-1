@@ -1,3 +1,4 @@
+
 // src/app/(app)/instructor/create-course/page.tsx
 'use client';
 
@@ -18,6 +19,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { BookCopy, UploadCloud, Loader2 } from "lucide-react";
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { useSetAtom } from 'jotai';
+import { addCourseAtom } from '@/store/courses';
+import { useAuth } from "@/hooks/use-auth";
 
 const courseFormSchema = z.object({
   courseTitle: z.string().min(5, { message: "El título debe tener al menos 5 caracteres." }),
@@ -33,6 +37,8 @@ export default function InstructorCreateCoursePage() {
   const router = useRouter();
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const addNewCourse = useSetAtom(addCourseAtom);
+  const { user } = useAuth();
 
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
@@ -40,6 +46,7 @@ export default function InstructorCreateCoursePage() {
       courseTitle: '',
       courseDescription: '',
       courseCategory: '',
+      courseThumbnail: null,
     },
   });
 
@@ -58,18 +65,41 @@ export default function InstructorCreateCoursePage() {
     }
   };
 
-  function onSubmit(values: CourseFormValues) {
+  async function onSubmit(values: CourseFormValues) {
     setIsSubmitting(true);
-    console.log("Instructor creating course:", values);
-    // Simulate API call
-    setTimeout(() => {
+
+    if (!user || !user.name) {
+        toast({ title: "Error de Autenticación", description: "No se pudo identificar al instructor. Por favor, inicia sesión de nuevo.", variant: "destructive" });
+        setIsSubmitting(false);
+        return;
+    }
+    
+    const newCourseData = {
+      courseTitle: values.courseTitle,
+      courseDescription: values.courseDescription,
+      courseCategory: values.courseCategory,
+      instructorName: user.name, // Get instructor name from authenticated user
+      courseThumbnail: values.courseThumbnail || thumbnailPreview, // Pass File object or preview data URL
+      dataAiHint: values.courseCategory.toLowerCase().replace(/\s+/g, '-').split('-').slice(0,2).join(' '),
+    };
+
+    try {
+      await addNewCourse(newCourseData);
       toast({
         title: "Curso Creado (Borrador)",
         description: `El curso "${values.courseTitle}" ha sido guardado como borrador. Continúa para añadir módulos.`,
       });
-      setIsSubmitting(false);
       router.push('/instructor/my-courses');
-    }, 1000);
+    } catch (error) {
+      console.error("Error creating course:", error);
+      toast({
+        title: "Error al Crear Curso",
+        description: "Hubo un problema al guardar el curso. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (

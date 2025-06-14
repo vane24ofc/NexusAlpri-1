@@ -36,58 +36,58 @@ export default function AdminDashboardPage() {
                   </Link>
                 </Button>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
-              <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
-                <Link href="/admin/users/new">
-                  <PlusCircle className="mr-2 h-5 w-5 text-primary" /> 
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
+              <Button variant="outline" className="w-full justify-start text-left py-8 px-6" asChild>
+                <Link href="/admin/users/new" className="flex items-start">
+                  <PlusCircle className="mr-3 h-6 w-6 text-primary mt-1" /> 
                   <div>
-                    <p className="font-semibold">Crear Usuario</p>
-                    <p className="text-sm text-muted-foreground">Añadir nuevo admin, instructor o estudiante.</p>
+                    <p className="font-semibold text-base mb-1">Crear Usuario</p>
+                    <p className="text-sm text-muted-foreground leading-snug">Añadir nuevo admin, instructor o estudiante.</p>
                   </div>
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
-                 <Link href="/admin/manage-courses/new">
-                    <PlusCircle className="mr-2 h-5 w-5 text-primary" />
+              <Button variant="outline" className="w-full justify-start text-left py-8 px-6" asChild>
+                 <Link href="/admin/manage-courses/new" className="flex items-start">
+                    <PlusCircle className="mr-3 h-6 w-6 text-primary mt-1" />
                     <div>
-                        <p className="font-semibold">Crear Curso</p>
-                        <p className="text-sm text-muted-foreground">Diseñar y publicar nuevo contenido.</p>
+                        <p className="font-semibold text-base mb-1">Crear Curso</p>
+                        <p className="text-sm text-muted-foreground leading-snug">Diseñar y publicar nuevo contenido.</p>
                     </div>
                  </Link>
               </Button>
-               <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
-                 <Link href="/admin/manage-announcements/new">
-                    <Megaphone className="mr-2 h-5 w-5 text-primary" />
+               <Button variant="outline" className="w-full justify-start text-left py-8 px-6" asChild>
+                 <Link href="/admin/manage-announcements/new" className="flex items-start">
+                    <Megaphone className="mr-3 h-6 w-6 text-primary mt-1" />
                     <div>
-                        <p className="font-semibold">Nuevo Anuncio</p>
-                        <p className="text-sm text-muted-foreground">Comunicar novedades importantes.</p>
+                        <p className="font-semibold text-base mb-1">Nuevo Anuncio</p>
+                        <p className="text-sm text-muted-foreground leading-snug">Comunicar novedades importantes.</p>
                     </div>
                  </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
-                 <Link href="/admin/settings">
-                    <Settings className="mr-2 h-5 w-5 text-primary" />
+              <Button variant="outline" className="w-full justify-start text-left py-8 px-6" asChild>
+                 <Link href="/admin/settings" className="flex items-start">
+                    <Settings className="mr-3 h-6 w-6 text-primary mt-1" />
                      <div>
-                        <p className="font-semibold">Configuración</p>
-                        <p className="text-sm text-muted-foreground">Ajustar parámetros del sistema.</p>
+                        <p className="font-semibold text-base mb-1">Configuración</p>
+                        <p className="text-sm text-muted-foreground leading-snug">Ajustar parámetros del sistema.</p>
                     </div>
                  </Link>
               </Button>
-               <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
-                 <Link href="/admin/users">
-                    <Users className="mr-2 h-5 w-5 text-primary" />
+               <Button variant="outline" className="w-full justify-start text-left py-8 px-6" asChild>
+                 <Link href="/admin/users" className="flex items-start">
+                    <Users className="mr-3 h-6 w-6 text-primary mt-1" />
                      <div>
-                        <p className="font-semibold">Gestionar Usuarios</p>
-                        <p className="text-sm text-muted-foreground">Ver y editar perfiles.</p>
+                        <p className="font-semibold text-base mb-1">Gestionar Usuarios</p>
+                        <p className="text-sm text-muted-foreground leading-snug">Ver y editar perfiles.</p>
                     </div>
                  </Link>
               </Button>
-               <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
-                 <Link href="/admin/manage-courses">
-                    <BookOpen className="mr-2 h-5 w-5 text-primary" />
+               <Button variant="outline" className="w-full justify-start text-left py-8 px-6" asChild>
+                 <Link href="/admin/manage-courses" className="flex items-start">
+                    <BookOpen className="mr-3 h-6 w-6 text-primary mt-1" />
                      <div>
-                        <p className="font-semibold">Gestionar Cursos</p>
-                        <p className="text-sm text-muted-foreground">Editar y organizar el catálogo.</p>
+                        <p className="font-semibold text-base mb-1">Gestionar Cursos</p>
+                        <p className="text-sm text-muted-foreground leading-snug">Editar y organizar el catálogo.</p>
                     </div>
                  </Link>
               </Button>

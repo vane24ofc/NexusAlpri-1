@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from 'lucide-react';
 
 export type UserRole = 'admin' | 'instructor' | 'student';
@@ -10,28 +11,29 @@ export interface User {
   avatar?: string;
 }
 
-export interface Course {
+export interface Lesson {
   id: string;
   title: string;
-  description: string;
-  instructor: string; 
-  category: string;
-  thumbnailUrl?: string;
-  dataAiHint?: string;
-  modules?: Module[];
+  contentType: 'video' | 'document' | 'link' | 'quiz';
+  contentUrl?: string; // For video, document URL, external link
+  // quizQuestions?: QuizQuestion[]; // Future: for quiz content
 }
 
 export interface Module {
   id: string;
   title: string;
-  lessons?: Lesson[];
+  lessons: Lesson[];
 }
 
-export interface Lesson {
+export interface Course {
   id: string;
   title: string;
-  contentType: 'video' | 'document' | 'quiz';
-  contentUrl?: string; 
+  description: string;
+  instructor: string;
+  category: string;
+  thumbnailUrl?: string;
+  dataAiHint?: string;
+  modules: Module[];
 }
 
 export interface EnterpriseResource {
@@ -43,7 +45,7 @@ export interface EnterpriseResource {
   fileUrl: string;
   tags?: string[];
   icon?: LucideIcon;
-  dataAiHint?: string; 
+  dataAiHint?: string;
   thumbnailUrl?: string;
 }
 
@@ -51,7 +53,7 @@ export interface Announcement {
   id:string;
   title: string;
   content: string;
-  author: string; 
-  date: string; 
+  author: string;
+  date: string;
   targetRoles?: UserRole[];
 }

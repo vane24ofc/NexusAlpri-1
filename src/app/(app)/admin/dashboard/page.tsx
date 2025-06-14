@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
@@ -35,7 +36,7 @@ export default function AdminDashboardPage() {
                   </Link>
                 </Button>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
               <Button variant="outline" className="w-full justify-start text-left py-6" asChild>
                 <Link href="/admin/users/new">
                   <PlusCircle className="mr-2 h-5 w-5 text-primary" /> 

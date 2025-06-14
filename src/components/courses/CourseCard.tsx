@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Course, UserRole } from '@/types';
@@ -18,21 +19,30 @@ export function CourseCard({ course }: CourseCardProps) {
   const userRole = user?.role;
 
   const getAction = () => {
-    if (userRole === 'admin' || userRole === 'instructor') {
+    if (userRole === 'admin') {
       return (
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/courses/${course.id}/preview`}> {/* Admin/Instructor might preview or manage */}
-            {userRole === 'admin' ? <Edit className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
-            {userRole === 'admin' ? 'Gestionar' : 'Ver Contenido'}
+          <Link href={`/admin/manage-courses/${course.id}/edit`}> 
+            <Edit className="mr-2 h-4 w-4" />
+            Gestionar Curso
           </Link>
         </Button>
       );
     }
-    // Default for student or unauthenticated (though catalog is usually for authenticated)
+    if (userRole === 'instructor') {
+       return (
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/courses/${course.id}`}> 
+            <Eye className="mr-2 h-4 w-4" />
+            Ver Contenido
+          </Link>
+        </Button>
+      );
+    }
+    // Default for student or unauthenticated
     return (
       <Button size="sm" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
         <Link href={`/courses/${course.id}`}>
-          {/* Check if student is enrolled, then "Continuar", else "Inscribirse" or "Ver Detalles" */}
           Ver Detalles <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
       </Button>

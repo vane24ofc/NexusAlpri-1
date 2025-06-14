@@ -25,20 +25,11 @@ export default function InstructorMyCoursesPage() {
 
   useEffect(() => {
     if (user && allCourses) {
-      // For now, assuming instructor dashboard shows all courses.
-      // Later, filter: allCourses.filter(course => course.instructorId === user.id)
-      // or course.instructor === user.name
-      // Using instructor name for now as per Course type
-      setInstructorCourses(allCourses.filter(course => course.instructor === user.name));
+      // Filter courses by instructor name for this demo
+      const filtered = allCourses.filter(course => course.instructor === user.name);
+      setInstructorCourses(filtered);
     } else {
-       // If no user, or user has no name, or courses not loaded, show all or none.
-       // For this demo, if user is instructor, show all if their name isn't matched.
-       // In a real app, you'd likely have instructor IDs.
-       if(user?.role === 'instructor'){
-         setInstructorCourses(allCourses); // Fallback for demo to show something
-       } else {
-         setInstructorCourses([]);
-       }
+       setInstructorCourses([]);
     }
   }, [allCourses, user]);
 
@@ -107,7 +98,7 @@ export default function InstructorMyCoursesPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                            <DropdownMenuItem asChild><Link href={`/courses/${course.id}/preview`} className="cursor-pointer"><Eye className="mr-2 h-4 w-4" /> Ver Contenido</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild><Link href={`/courses/${course.id}`} className="cursor-pointer"><Eye className="mr-2 h-4 w-4" /> Ver Contenido</Link></DropdownMenuItem>
                             <DropdownMenuItem asChild><Link href={`/instructor/my-courses/${course.id}/edit`} className="cursor-pointer"><Edit3 className="mr-2 h-4 w-4" /> Editar Curso</Link></DropdownMenuItem>
                             <DropdownMenuItem asChild><Link href={`/instructor/my-courses/${course.id}/students`} className="cursor-pointer"><Users className="mr-2 h-4 w-4" /> Ver Estudiantes</Link></DropdownMenuItem>
                             <DropdownMenuItem asChild><Link href={`/instructor/my-courses/${course.id}/progress`} className="cursor-pointer"><BarChart2 className="mr-2 h-4 w-4" /> Ver Progreso</Link></DropdownMenuItem>

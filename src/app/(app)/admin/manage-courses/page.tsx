@@ -81,7 +81,7 @@ export default function AdminManageCoursesPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                            <DropdownMenuItem asChild><Link href={`/courses/${course.id}/preview`} className="cursor-pointer"><Eye className="mr-2 h-4 w-4" /> Ver Contenido</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild><Link href={`/courses/${course.id}`} className="cursor-pointer"><Eye className="mr-2 h-4 w-4" /> Ver Contenido</Link></DropdownMenuItem>
                             <DropdownMenuItem asChild><Link href={`/admin/manage-courses/${course.id}/edit`} className="cursor-pointer"><Edit className="mr-2 h-4 w-4" /> Editar Curso</Link></DropdownMenuItem>
                             <DropdownMenuItem className="text-destructive focus:text-destructive-foreground focus:bg-destructive cursor-pointer"><Trash2 className="mr-2 h-4 w-4" /> Eliminar Curso</DropdownMenuItem>
                             <DropdownMenuSeparator />
